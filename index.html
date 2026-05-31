@@ -131,6 +131,7 @@
             box-shadow: 0 5px 15px rgba(46, 79, 54, 0.2);
             margin-top: 10px;
             letter-spacing: 1px;
+          	display: block;
         }
         button:hover {
             transform: translateY(-2px);
@@ -198,18 +199,18 @@
 
             <div class="form-group">
                 <label>LINE ID</label>
-                <input type="text" id="lineId" placeholder="請輸入 LINE ID (選填)">
+                <input type="text" id="lineId" placeholder="請輸入 LINE ID">
             </div>
 
             <input type="hidden" id="lineUserId" value="">
 
-            <button type="submit" id="submitBtn" disabled>LIFF 初始化中...</button>
+            <button type="submit" id="submitBtn">提交報名表單</button>
         </form>
     </div>
 </div>
 
 <script>
-    // ⚠️ 請記得替換成您真實的 GAS 與 LIFF ID
+    // ⚠️ 請記得檢查是否已填入真實的 GAS 與 LIFF ID
     const GAS_URL = "你的_GAS_網頁應用程式_URL"; 
     const LIFF_ID = "你的_LINE_LIFF_ID"; 
 
@@ -222,6 +223,10 @@
 
     // LIFF 初始化
     document.addEventListener("DOMContentLoaded", () => {
+        if (!LIFF_ID || LIFF_ID.includes("你的")) {
+            return; // 避免預設文字未修改時報錯
+        }
+        
         liff.init({ liffId: LIFF_ID })
             .then(() => {
                 if (!liff.isLoggedIn()) {
@@ -229,14 +234,12 @@
                 } else {
                     liff.getProfile().then(profile => {
                         document.getElementById('lineUserId').value = profile.userId;
-                    });
+                    }).catch(e => console.error("無法取得 Profile", e));
                     submitBtn.disabled = false;
-                    submitBtn.innerText = "提交報名資料";
                 }
             })
             .catch((err) => {
                 console.error("LIFF 初始化失敗", err);
-                submitBtn.innerText = "請在 LINE 內開啟此網頁";
             });
     });
 
@@ -294,14 +297,13 @@
 
         let cleanActivityName = activitySelect.value === 'socks' ? "植物染襪手作體驗" : "植萃香遇・護唇膏 DIY";
         
-        // 如果是護唇膏，身分強制判定為「一般」
         let finalIdentity = "一般";
         if (activitySelect.value === 'socks') {
             finalIdentity = document.querySelector('input[name="identity"]:checked').value === 'member' ? "會員" : "非會員";
         }
 
         const payload = {
-            userId: userId,
+            userId: userId || "U00000000000000000000000000000000",
             activity: cleanActivityName,
             session: sessionSelect.value,
             identity: finalIdentity,
