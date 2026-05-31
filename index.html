@@ -291,8 +291,9 @@
         e.preventDefault();
         
         const userId = document.getElementById('lineUserId').value;
-        submitBtn.disabled = true;
-        submitBtn.innerText = "正在為您開票中...";
+        
+        // 💡 修正處：只防重複點擊，絕不改動按鈕上的文字
+        submitBtn.disabled = true; 
 
         let cleanActivityName = activitySelect.value === 'socks' ? "植物染襪手作體驗" : "植萃香遇・護唇膏 DIY";
         
@@ -312,7 +313,7 @@
             lineId: document.getElementById('lineId').value
         };
 
-        // 💡 修正處：增加了跨網域安全宣告 mode: 'no-cors'
+        // 發送給 Google 後台
         fetch(GAS_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -320,15 +321,11 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
-        })
-        .then(() => {
-            alert('報名成功！憑證已即時發送到您的 LINE 聊天室！');
-            liff.closeWindow(); 
-        })
-        .catch(error => {
-            alert('報名成功！請返回 LINE 聊天室查看憑證。');
-            liff.closeWindow();
         });
+
+        // 💡 修正處：按下直接彈窗並關網頁，按鈕從頭到尾保持「提交報名表單」
+        alert('報名成功！憑證已即時發送到您的 LINE 聊天室！');
+        liff.closeWindow(); 
     });
 </script>
 </body>
