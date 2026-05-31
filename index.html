@@ -131,7 +131,7 @@
             box-shadow: 0 5px 15px rgba(46, 79, 54, 0.2);
             margin-top: 10px;
             letter-spacing: 1px;
-          	display: block;
+            display: block;
         }
         button:hover {
             transform: translateY(-2px);
@@ -210,7 +210,6 @@
 </div>
 
 <script>
-    // ⚠️ 請記得檢查是否已填入真實的 GAS 與 LIFF ID
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwlOo4wabACoCmK-m3dJIPylam09AlfWM6vzP-iU-hB9kSsYbwV_RN1-0ctOoJl1ej1/exec"; 
     const LIFF_ID = "2010240867-jc8x0Nkl"; 
 
@@ -224,7 +223,7 @@
     // LIFF 初始化
     document.addEventListener("DOMContentLoaded", () => {
         if (!LIFF_ID || LIFF_ID.includes("你的")) {
-            return; // 避免預設文字未修改時報錯
+            return; 
         }
         
         liff.init({ liffId: LIFF_ID })
@@ -313,8 +312,13 @@
             lineId: document.getElementById('lineId').value
         };
 
+        // 💡 修正處：增加了跨網域安全宣告 mode: 'no-cors'
         fetch(GAS_URL, {
             method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(payload)
         })
         .then(() => {
