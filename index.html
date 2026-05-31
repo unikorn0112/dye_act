@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>染織文化協會手作體驗報名</title>
+    <title>染織文化協會｜手作體驗報名</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         :root {
@@ -30,10 +30,9 @@
             background: #ffffff;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            overflow: hidden; /* 確保頂部漸層能對齊圓角 */
+            overflow: hidden;
             position: relative;
         }
-        /* 增加頂部裝飾條，呼應演唱會門票視覺 */
         .decor-bar {
             background: var(--primary-gradient);
             height: 12px;
@@ -82,7 +81,7 @@
             border-color: var(--primary-color);
             background-color: #fff;
             outline: none;
-            box-shadow: 0 0 0 4px rgba(46, 79, 54, 0.1); /* 溫和的綠色發光特效 */
+            box-shadow: 0 0 0 4px rgba(46, 79, 54, 0.1);
         }
         .radio-group {
             display: flex;
@@ -100,7 +99,7 @@
         .radio-label input {
             margin-right: 8px;
             transform: scale(1.2);
-            accent-color: var(--primary-color); /* 讓單選鈕也變美美的森林綠 */
+            accent-color: var(--primary-color);
         }
         .fee-display {
             background: #F4F7F4;
@@ -115,7 +114,7 @@
         }
         hr {
             border: 0;
-            border-top: 1px dashed #DDD; /* 改為高質感的虛線切線 */
+            border-top: 1px dashed #DDD;
             margin: 30px 0;
         }
         button {
@@ -134,11 +133,8 @@
             letter-spacing: 1px;
         }
         button:hover {
-            transform: translateY(-2px); /* 鼠標懸停微浮起 */
+            transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(46, 79, 54, 0.3);
-        }
-        button:active {
-            transform: translateY(0);
         }
         button:disabled {
             background: #CCC;
@@ -146,6 +142,7 @@
             cursor: not-allowed;
             transform: none;
         }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -159,7 +156,7 @@
         
         <form id="regForm">
             <div class="form-group">
-                <label>1. 選擇活動項目</label>
+                <label>選擇活動項目</label>
                 <select id="activity" required>
                     <option value="">-- 請選擇體驗項目 --</option>
                     <option value="lipbalm">植萃香遇・護唇膏 DIY</option>
@@ -168,14 +165,14 @@
             </div>
 
             <div class="form-group">
-                <label>2. 活動場次時間</label>
+                <label>活動場次時間</label>
                 <select id="session" required disabled>
                     <option value="">-- 請先選擇活動項目 --</option>
                 </select>
             </div>
 
             <div id="identityGroup" class="form-group hidden">
-                <label>3. 您的身分確認</label>
+                <label>您的身分確認</label>
                 <div class="radio-group">
                     <label class="radio-label"><input type="radio" name="identity" value="nonmember" checked> 非會員</label>
                     <label class="radio-label"><input type="radio" name="identity" value="member"> 協會會員</label>
@@ -183,26 +180,28 @@
             </div>
 
             <div class="form-group">
-                <label>4. 本場次費用 (當天現場繳費)</label>
+                <label>本場次費用 (當天現場繳費)</label>
                 <div id="feeDisplay" class="fee-display">NT$ 0</div>
             </div>
 
             <hr>
 
             <div class="form-group">
-                <label>5. 報名姓名</label>
+                <label>報名姓名</label>
                 <input type="text" id="name" placeholder="請輸入真實姓名" required>
             </div>
 
             <div class="form-group">
-                <label>6. 報名電話</label>
+                <label>報名電話</label>
                 <input type="tel" id="phone" placeholder="請輸入手機號碼" required pattern="[0-9]{9,10}">
             </div>
 
             <div class="form-group">
-                <label>7. LINE ID</label>
+                <label>LINE ID</label>
                 <input type="text" id="lineId" placeholder="請輸入 LINE ID (選填)">
             </div>
+
+            <input type="hidden" id="lineUserId" value="">
 
             <button type="submit" id="submitBtn" disabled>LIFF 初始化中...</button>
         </form>
@@ -210,9 +209,9 @@
 </div>
 
 <script>
-    // ⚠️ 請記得替換成您在上一動設定好的真實 GAS 與 LIFF ID
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwlOo4wabACoCmK-m3dJIPylam09AlfWM6vzP-iU-hB9kSsYbwV_RN1-0ctOoJl1ej1/exec"; 
-    const LIFF_ID = "2010240867-jc8x0Nkl"; 
+    // ⚠️ 請記得替換成您真實的 GAS 與 LIFF ID
+    const GAS_URL = "你的_GAS_網頁應用程式_URL"; 
+    const LIFF_ID = "你的_LINE_LIFF_ID"; 
 
     const activitySelect = document.getElementById('activity');
     const sessionSelect = document.getElementById('session');
@@ -228,14 +227,9 @@
                 if (!liff.isLoggedIn()) {
                     liff.login(); 
                 } else {
-                    const context = liff.getContext();
-                    if(context && context.userId) {
-                        document.getElementById('lineUserId').value = context.userId;
-                    } else {
-                        liff.getProfile().then(profile => {
-                            document.getElementById('lineUserId').value = profile.userId;
-                        });
-                    }
+                    liff.getProfile().then(profile => {
+                        document.getElementById('lineUserId').value = profile.userId;
+                    });
                     submitBtn.disabled = false;
                     submitBtn.innerText = "提交報名資料";
                 }
@@ -273,15 +267,19 @@
             opt.innerText = item.text;
             sessionSelect.appendChild(opt);
         });
-        if (act === 'socks') { identityGroup.classList.remove('hidden'); } 
-        else { identityGroup.classList.add('hidden'); }
+        if (act === 'socks') { 
+            identityGroup.classList.remove('hidden'); 
+        } else { 
+            identityGroup.classList.add('hidden'); 
+        }
         calculateFee();
     }
 
     function calculateFee() {
         const act = activitySelect.value;
-        if (act === 'lipbalm') { feeDisplay.innerText = "520"; } 
-        else if (act === 'socks') {
+        if (act === 'lipbalm') { 
+            feeDisplay.innerText = "520"; 
+        } else if (act === 'socks') {
             const isMember = document.querySelector('input[name="identity"]:checked').value === 'member';
             feeDisplay.innerText = isMember ? "250" : "350";
         }
@@ -290,19 +288,23 @@
     regForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // 建立一個臨時隱藏變數防呆
-        const userId = liff.getContext() ? liff.getContext().userId : "";
-
+        const userId = document.getElementById('lineUserId').value;
         submitBtn.disabled = true;
         submitBtn.innerText = "正在為您開票中...";
 
         let cleanActivityName = activitySelect.value === 'socks' ? "植物染襪手作體驗" : "植萃香遇・護唇膏 DIY";
+        
+        // 如果是護唇膏，身分強制判定為「一般」
+        let finalIdentity = "一般";
+        if (activitySelect.value === 'socks') {
+            finalIdentity = document.querySelector('input[name="identity"]:checked').value === 'member' ? "會員" : "非會員";
+        }
 
         const payload = {
-            userId: userId || "U00000000000000000000000000000000", // 防呆測試 UID
+            userId: userId,
             activity: cleanActivityName,
             session: sessionSelect.value,
-            identity: activitySelect.value === 'socks' ? (document.querySelector('input[name="identity"]:checked').value === 'member' ? "會員" : "非會員") : "一般",
+            identity: finalIdentity,
             fee: feeDisplay.innerText,
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
