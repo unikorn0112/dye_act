@@ -179,7 +179,7 @@
 
 <script>
     // ⚠️ 請在此處替換成您在 Google 部署得到的 Web App API 網址
-    const GAS_URL = "YOUR_GAS_WEB_APP_URL"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwlOo4wabACoCmK-m3dJIPylam09AlfWM6vzP-iU-hB9kSsYbwV_RN1-0ctOoJl1ej1/exec"; 
 
     const activitySelect = document.getElementById('activity');
     const sessionSelect = document.getElementById('session');
