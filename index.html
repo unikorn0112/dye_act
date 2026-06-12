@@ -160,6 +160,7 @@
                 <label>選擇活動項目</label>
                 <select id="activity" required>
                     <option value="">-- 請選擇體驗項目 --</option>
+                    <option value="silk_dye">薄蠶絲花葉植印染 (講師：黃文惠)</option>
                     <option value="lipbalm">植萃香遇・護唇膏 DIY</option>
                     <option value="socks">植物染襪手作體驗</option>
                 </select>
@@ -242,7 +243,12 @@
             });
     });
 
+    // 💡 已新增薄蠶絲兩天場次數據
     const sessionData = {
+        silk_dye: [
+            { text: "6/20 (六) 10:00 - 16:00", value: "6/20 全天場" },
+            { text: "6/21 (日) 10:00 - 16:00", value: "6/21 全天場" }
+        ],
         lipbalm: [{ text: "6/28 (日) 10:00 - 12:00 (上午場)", value: "6/28 上午場" }],
         socks: [{ text: "6/28 (日) 14:00 - 16:00 (下午場)", value: "6/28 下午場" }]
     };
@@ -269,7 +275,9 @@
             opt.innerText = item.text;
             sessionSelect.appendChild(opt);
         });
-        if (act === 'socks') { 
+        
+        // 💡 薄蠶絲與植物染襪都需要區分會員身分
+        if (act === 'socks' || act === 'silk_dye') { 
             identityGroup.classList.remove('hidden'); 
         } else { 
             identityGroup.classList.add('hidden'); 
@@ -279,10 +287,13 @@
 
     function calculateFee() {
         const act = activitySelect.value;
-        if (act === 'lipbalm') { 
+        const isMember = document.querySelector('input[name="identity"]:checked').value === 'member';
+        
+        if (act === 'silk_dye') {
+            feeDisplay.innerText = isMember ? "3500" : "3800"; // 💡 新增薄蠶絲收費
+        } else if (act === 'lipbalm') { 
             feeDisplay.innerText = "520"; 
         } else if (act === 'socks') {
-            const isMember = document.querySelector('input[name="identity"]:checked').value === 'member';
             feeDisplay.innerText = isMember ? "250" : "350";
         }
     }
@@ -291,14 +302,15 @@
         e.preventDefault();
         
         const userId = document.getElementById('lineUserId').value;
-        
-        // 💡 修正處：只防重複點擊，絕不改動按鈕上的文字
         submitBtn.disabled = true; 
 
-        let cleanActivityName = activitySelect.value === 'socks' ? "植物染襪手作體驗" : "植萃香遇・護唇膏 DIY";
+        let cleanActivityName = "未知項目";
+        if (activitySelect.value === 'silk_dye') cleanActivityName = "薄蠶絲花葉植印染";
+        else if (activitySelect.value === 'socks') cleanActivityName = "植物染襪手作體驗";
+        else if (activitySelect.value === 'lipbalm') cleanActivityName = "植萃香遇・護唇膏 DIY";
         
         let finalIdentity = "一般";
-        if (activitySelect.value === 'socks') {
+        if (activitySelect.value === 'socks' || activitySelect.value === 'silk_dye') {
             finalIdentity = document.querySelector('input[name="identity"]:checked').value === 'member' ? "會員" : "非會員";
         }
 
@@ -313,7 +325,6 @@
             lineId: document.getElementById('lineId').value
         };
 
-        // 發送給 Google 後台
         fetch(GAS_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -323,7 +334,6 @@
             body: JSON.stringify(payload)
         });
 
-        // 💡 修正處：按下直接彈窗並關網頁，按鈕從頭到尾保持「提交報名表單」
         alert('報名成功！憑證已即時發送到您的 LINE 聊天室！');
         liff.closeWindow(); 
     });
