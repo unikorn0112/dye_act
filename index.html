@@ -160,6 +160,7 @@
                 <label>選擇活動項目</label>
                 <select id="activity" required>
                     <option value="">-- 請選擇體驗項目 --</option>
+                    <option value="wool_painting">羊毛畫體驗課</option>
                     <option value="silk_dye">薄蠶絲花葉植印染</option>
                     <option value="lipbalm">植萃香遇・護唇膏 DIY</option>
                     <option value="socks">植物染襪手作體驗</option>
@@ -198,10 +199,10 @@
                 <input type="tel" id="phone" placeholder="請輸入手機號碼" required pattern="[0-9]{9,10}">
             </div>
 
-         <div class="form-group">
-    <label>LINE 名稱（或是暱稱）</label>
-    <input type="text" id="lineId" placeholder="請輸入 LINE 顯示名稱">
-</div>
+            <div class="form-group">
+                <label>LINE 名稱（或是暱稱）</label>
+                <input type="text" id="lineId" placeholder="請輸入 LINE 顯示名稱">
+            </div>
             <input type="hidden" id="lineUserId" value="">
 
             <button type="submit" id="submitBtn">提交報名表單</button>
@@ -242,8 +243,10 @@
             });
     });
 
-    // 💡 已新增薄蠶絲兩天場次數據
     const sessionData = {
+        wool_painting: [
+            { text: "7/19 (日) 09:30 - 12:00", value: "7/19 上午場" }
+        ],
         silk_dye: [
             { text: "6/20 (六) 10:00 - 16:00", value: "6/20 全天場" },
             { text: "6/21 (日) 10:00 - 16:00", value: "6/21 全天場" }
@@ -275,7 +278,6 @@
             sessionSelect.appendChild(opt);
         });
         
-        // 💡 薄蠶絲與植物染襪都需要區分會員身分
         if (act === 'socks' || act === 'silk_dye') { 
             identityGroup.classList.remove('hidden'); 
         } else { 
@@ -288,8 +290,10 @@
         const act = activitySelect.value;
         const isMember = document.querySelector('input[name="identity"]:checked').value === 'member';
         
-        if (act === 'silk_dye') {
-            feeDisplay.innerText = isMember ? "3500" : "3800"; // 💡 新增薄蠶絲收費
+        if (act === 'wool_painting') {
+            feeDisplay.innerText = "590";
+        } else if (act === 'silk_dye') {
+            feeDisplay.innerText = isMember ? "3500" : "3800"; 
         } else if (act === 'lipbalm') { 
             feeDisplay.innerText = "520"; 
         } else if (act === 'socks') {
@@ -304,7 +308,9 @@
         submitBtn.disabled = true; 
 
         let cleanActivityName = "未知項目";
-        if (activitySelect.value === 'silk_dye') cleanActivityName = "薄蠶絲花葉植印染";
+        // ✏️ 已修改：羊毛畫體驗課
+        if (activitySelect.value === 'wool_painting') cleanActivityName = "羊毛畫體驗課";
+        else if (activitySelect.value === 'silk_dye') cleanActivityName = "薄蠶絲花葉植印染";
         else if (activitySelect.value === 'socks') cleanActivityName = "植物染襪手作體驗";
         else if (activitySelect.value === 'lipbalm') cleanActivityName = "植萃香遇・護唇膏 DIY";
         
