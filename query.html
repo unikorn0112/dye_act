@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>染織文化協會｜報名紀錄查詢</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #2E4F36 0%, #4A6B53 100%);
+            --primary-color: #2E4F36;
+            --bg-color: #EFEFEF; 
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px 15px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 460px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .decor-bar {
+            background: var(--primary-gradient);
+            height: 12px;
+            width: 100%;
+        }
+        .content {
+            padding: 30px 24px;
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0 0 8px 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .card {
+            border: 1.5px solid #EAEAEA;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            background: #fff;
+            border-left: 5px solid var(--primary-color);
+        }
+        .card-title {
+            font-weight: 800;
+            font-size: 18px;
+            color: #2D3748;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #E2E8F0;
+            padding-bottom: 8px;
+        }
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .card-row:last-child {
+            margin-bottom: 0;
+        }
+        .card-row .label { color: #718096; }
+        .card-row .value { font-weight: bold; color: #4A5568; }
+        /* 💡 注記：名字特別顯色，方便學員一眼看清 */
+        .name-value { color: var(--primary-color) !important; }
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 50px 20px;
+            font-size: 15px;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="decor-bar"></div>
+    <div class="content">
+        <h2>染織文化協會</h2>
+        <div class="subtitle">您的線上體驗報名紀錄</div>
+        
+        <div id="loadingStatus" class="loading">🔄 正在載入您的專屬報名資料...</div>
+        <div id="resultContainer"></div>
+    </div>
+</div>
+
+<script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwlOo4wabACoCmK-m3dJIPylam09AlfWM6vzP-iU-hB9kSsYbwV_RN1-0ctOoJl1ej1/exec"; 
+    const LIFF_ID = "2010240867-jc8x0Nkl"; 
+
+    document.addEventListener("DOMContentLoaded", () => {
+        liff.init({ liffId: LIFF_ID })
+            .then(() => {
+                if (!liff.isLoggedIn()) {
+                    liff.login(); 
+                } else {
+                    liff.getProfile().then(profile => {
+                        fetchRecords(profile.userId);
+                    }).catch(e => {
+                        console.error("抓取 Profile 失敗", e);
+                        showError('無法讀取您的 LINE 身份，請重試。');
+                    });
+                }
+            }).catch(err => {
+                console.error("LIFF 初始化失敗", err);
+                showError('LIFF 初始化失敗');
+            });
+    });
+
+    function fetchRecords(userId) {
+        fetch(`${GAS_URL}?userId=${userId}`)
+            .then(res => res.json())
+            .then(res => {
+                document.getElementById('loadingStatus').classList.add('hidden');
+                
+                if (res.status === "success") {
+                    renderCards(res.data);
+                } else {
+                    showError('後台系統忙碌中，請稍候再試。');
+                }
+            })
+            .catch(err => {
+                document.getElementById('loadingStatus').classList.add('hidden');
+                console.error("連線後台失敗：", err);
+                showError('連線失敗，請檢查網路狀態。');
+            });
+    }
+
+    // 💡 注記：調整 HTML 生成邏輯，只顯示「課程名稱」、「上課場次」與「報名姓名」
+    function renderCards(records) {
+        const container = document.getElementById('resultContainer');
+        if (!records || records.length === 0) {
+            container.innerHTML = '<div class="no-data">您目前沒有報名任何課程喔！</div>';
+            return;
+        }
+        
+        let html = "";
+        records.forEach(item => {
+            html += `
+                <div class="card">
+                    <div class="card-title">🍂 ${item.activity}</div>
+                    
+                    <div class="card-row">
+                        <span class="label">👤 報名姓名</span>
+                        <span class="value name-value">${item.name}</span>
+                    </div>
+
+                    <div class="card-row">
+                        <span class="label">📅 上課場次</span>
+                        <span class="value">${item.session}</span>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function showError(msg) {
+        document.getElementById('loadingStatus').classList.add('hidden');
+        document.getElementById('resultContainer').innerHTML = `<div class="no-data">${msg}</div>`;
+    }
+</script>
+</body>
+</html>
