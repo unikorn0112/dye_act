@@ -91,7 +91,6 @@
         }
         .card-row .label { color: #718096; }
         .card-row .value { font-weight: bold; color: #4A5568; }
-        /* 💡 注記：名字特別顯色，方便學員一眼看清 */
         .name-value { color: var(--primary-color) !important; }
         .no-data {
             text-align: center;
@@ -108,7 +107,7 @@
     <div class="decor-bar"></div>
     <div class="content">
         <h2>染織文化協會</h2>
-        <div class="subtitle">您的線上體驗報名紀錄</div>
+        <div class="subtitle">報名紀錄</div>
         
         <div id="loadingStatus" class="loading">🔄 正在載入您的專屬報名資料...</div>
         <div id="resultContainer"></div>
@@ -157,7 +156,6 @@
             });
     }
 
-    // 💡 注記：調整 HTML 生成邏輯，只顯示「課程名稱」、「上課場次」與「報名姓名」
     function renderCards(records) {
         const container = document.getElementById('resultContainer');
         if (!records || records.length === 0) {
@@ -167,6 +165,21 @@
         
         let html = "";
         records.forEach(item => {
+            
+            // ✏️ 修改點二：依據後台傳回的場次名稱，動態補上詳細的星期與時間對照
+            let fullSessionText = item.session;
+            if (item.session === "7/19 上午場") {
+                fullSessionText = "7/19 (日) 09:30 - 12:00";
+            } else if (item.session === "6/20 全天場") {
+                fullSessionText = "6/20 (六) 10:00 - 16:00";
+            } else if (item.session === "6/21 全天場") {
+                fullSessionText = "6/21 (日) 10:00 - 16:00";
+            } else if (item.session === "6/28 上午場") {
+                fullSessionText = "6/28 (日) 10:00 - 12:00";
+            } else if (item.session === "6/28 下午場") {
+                fullSessionText = "6/28 (日) 14:00 - 16:00";
+            }
+
             html += `
                 <div class="card">
                     <div class="card-title">🍂 ${item.activity}</div>
@@ -178,7 +191,7 @@
 
                     <div class="card-row">
                         <span class="label">📅 上課場次</span>
-                        <span class="value">${item.session}</span>
+                        <span class="value">${fullSessionText}</span>
                     </div>
                 </div>
             `;
