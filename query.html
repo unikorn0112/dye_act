@@ -82,7 +82,7 @@
         .card-row {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start; /* 讓多行時間靠上對齊 */
+            align-items: flex-start;
             font-size: 15px;
             margin-bottom: 8px;
             line-height: 1.6;
@@ -167,10 +167,16 @@
                     records.forEach(function(item) {
                         var fullSessionText = item.session;
                         
-                        // ✨ 綴織課專屬：完美對齊海報上最詳細的四堂課上下午時段
-                        if (item.session === "7/3-7/4（四堂課）") {
-                            fullSessionText = "7/3(四) & 7/4(五)<br>上午 09:30 ~ 12:00<br>下午 14:30 ~ 17:00<br>(共四堂課)";
-                        } else if (item.session === "7/19 下午場") {
+                        // 💡 查詢頁面中已針對 4 個獨立梯次轉換為最直覺的卡片文字格式
+                        if (item.session === "7/3 上午場") {
+                            fullSessionText = "7/3 (四) 09:30 - 12:00";
+                        } else if (item.session === "7/3 下午場") {
+                            fullSessionText = "7/3 (四) 14:30 - 17:00";
+                        } else if (item.session === "7/4 上午場") {
+                            fullSessionText = "7/4 (五) 09:30 - 12:00";
+                        } else if (item.session === "7/4 下午場") {
+                            fullSessionText = "7/4 (五) 14:30 - 17:00";
+                        } else if (item.session === "7/19 下慢場" || item.session === "7/19 下午場") {
                             fullSessionText = "7/19 (日) 13:00 - 15:00";
                         } else if (item.session === "7/26 場次") {
                             fullSessionText = "7/26 (日) 10:00 - 14:00";
