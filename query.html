@@ -142,7 +142,6 @@
             .then(res => res.json())
             .then(res => {
                 document.getElementById('loadingStatus').classList.add('hidden');
-                
                 if (res.status === "success") {
                     renderCards(res.data);
                 } else {
@@ -165,10 +164,13 @@
         
         let html = "";
         records.forEach(item => {
-            
-            // ✏️ 修改點二：依據後台傳回的場次名稱，動態補上詳細的星期與時間對照
+            // 💡 ➕ 補上新課程的時間對照顯示邏輯
             let fullSessionText = item.session;
-            if (item.session === "7/19 上午場") {
+            if (item.session === "7/19 下午場") {
+                fullSessionText = "7/19 (日) 13:00 - 15:00";
+            } else if (item.session === "7/26 場次") {
+                fullSessionText = "7/26 (日) 10:00 - 14:00";
+            } else if (item.session === "7/19 上午場") {
                 fullSessionText = "7/19 (日) 09:30 - 12:00";
             } else if (item.session === "6/20 全天場") {
                 fullSessionText = "6/20 (六) 10:00 - 16:00";
@@ -183,12 +185,10 @@
             html += `
                 <div class="card">
                     <div class="card-title">🍂 ${item.activity}</div>
-                    
                     <div class="card-row">
                         <span class="label">👤 報名姓名</span>
                         <span class="value name-value">${item.name}</span>
                     </div>
-
                     <div class="card-row">
                         <span class="label">📅 上課場次</span>
                         <span class="value">${fullSessionText}</span>
