@@ -160,6 +160,8 @@
                 <label>選擇活動項目</label>
                 <select id="activity" required>
                     <option value="">-- 請選擇體驗項目 --</option>
+                    <option value="dye_bag">植物染植物香氣香包</option>
+                    <option value="shell_brooch">珠貝編結胸針</option>
                     <option value="wool_painting">羊毛畫體驗課</option>
                     <option value="silk_dye">薄蠶絲花葉植印染</option>
                     <option value="lipbalm">植萃香遇・護唇膏 DIY</option>
@@ -221,12 +223,10 @@
     const regForm = document.getElementById('regForm');
     const submitBtn = document.getElementById('submitBtn');
 
-    // LIFF 初始化
     document.addEventListener("DOMContentLoaded", () => {
         if (!LIFF_ID || LIFF_ID.includes("你的")) {
             return; 
         }
-        
         liff.init({ liffId: LIFF_ID })
             .then(() => {
                 if (!liff.isLoggedIn()) {
@@ -243,10 +243,11 @@
             });
     });
 
+    // 💡 ➕ 補上新課程的場次數據
     const sessionData = {
-        wool_painting: [
-            { text: "7/19 (日) 09:30 - 12:00", value: "7/19 上午場" }
-        ],
+        dye_bag: [{ text: "7/19 (日) 13:00 - 15:00", value: "7/19 下午場" }],
+        shell_brooch: [{ text: "7/26 (日) 10:00 - 14:00", value: "7/26 場次" }],
+        wool_painting: [{ text: "7/19 (日) 09:30 - 12:00", value: "7/19 上午場" }],
         silk_dye: [
             { text: "6/20 (六) 10:00 - 16:00", value: "6/20 全天場" },
             { text: "6/21 (日) 10:00 - 16:00", value: "6/21 全天場" }
@@ -290,7 +291,12 @@
         const act = activitySelect.value;
         const isMember = document.querySelector('input[name="identity"]:checked').value === 'member';
         
-        if (act === 'wool_painting') {
+        // 💡 ➕ 補上新課程費用
+        if (act === 'dye_bag') {
+            feeDisplay.innerText = "499";
+        } else if (act === 'shell_brooch') {
+            feeDisplay.innerText = "800";
+        } else if (act === 'wool_painting') {
             feeDisplay.innerText = "590";
         } else if (act === 'silk_dye') {
             feeDisplay.innerText = isMember ? "3500" : "3800"; 
@@ -303,13 +309,14 @@
 
     regForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
         const userId = document.getElementById('lineUserId').value;
         submitBtn.disabled = true; 
 
         let cleanActivityName = "未知項目";
-        // ✏️ 已修改：羊毛畫體驗課
-        if (activitySelect.value === 'wool_painting') cleanActivityName = "羊毛畫體驗課";
+        // 💡 ➕ 中文名稱轉換
+        if (activitySelect.value === 'dye_bag') cleanActivityName = "植物染植物香氣香包";
+        else if (activitySelect.value === 'shell_brooch') cleanActivityName = "珠貝編結胸針";
+        else if (activitySelect.value === 'wool_painting') cleanActivityName = "羊毛畫體驗課";
         else if (activitySelect.value === 'silk_dye') cleanActivityName = "薄蠶絲花葉植印染";
         else if (activitySelect.value === 'socks') cleanActivityName = "植物染襪手作體驗";
         else if (activitySelect.value === 'lipbalm') cleanActivityName = "植萃香遇・護唇膏 DIY";
@@ -333,9 +340,7 @@
         fetch(GAS_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
