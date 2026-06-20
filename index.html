@@ -160,6 +160,7 @@
                 <label>選擇活動項目</label>
                 <select id="activity" required>
                     <option value="">-- 請選擇體驗項目 --</option>
+                    <option value="weaving">綴織課</option>
                     <option value="dye_bag">植物染植物香氣香包</option>
                     <option value="shell_brooch">珠貝編結胸針</option>
                     <option value="wool_painting">羊毛畫體驗課</option>
@@ -245,6 +246,8 @@
 
     // 💡 ➕ 補上新課程的場次數據
     const sessionData = {
+        // ✨ 修改命名：7/3-7/4（四堂課）
+        weaving: [{ text: "7/3(四) 及 7/4(五) 共四堂課", value: "7/3-7/4（四堂課）" }],
         dye_bag: [{ text: "7/19 (日) 13:00 - 15:00", value: "7/19 下午場" }],
         shell_brooch: [{ text: "7/26 (日) 10:00 - 14:00", value: "7/26 場次" }],
         wool_painting: [{ text: "7/19 (日) 09:30 - 12:00", value: "7/19 上午場" }],
@@ -292,7 +295,9 @@
         const isMember = document.querySelector('input[name="identity"]:checked').value === 'member';
         
         // 💡 ➕ 補上新課程費用
-        if (act === 'dye_bag') {
+        if (act === 'weaving') {
+            feeDisplay.innerText = "500";
+        } else if (act === 'dye_bag') {
             feeDisplay.innerText = "499";
         } else if (act === 'shell_brooch') {
             feeDisplay.innerText = "800";
@@ -313,8 +318,9 @@
         submitBtn.disabled = true; 
 
         let cleanActivityName = "未知項目";
-        // 💡 ➕ 中文名稱轉換
-        if (activitySelect.value === 'dye_bag') cleanActivityName = "植物染植物香氣香包";
+        // 💡 ➕ 中文名稱轉換 (純淨化：綴織課)
+        if (activitySelect.value === 'weaving') cleanActivityName = "綴織課";
+        else if (activitySelect.value === 'dye_bag') cleanActivityName = "植物染植物香氣香包";
         else if (activitySelect.value === 'shell_brooch') cleanActivityName = "珠貝編結胸針";
         else if (activitySelect.value === 'wool_painting') cleanActivityName = "羊毛畫體驗課";
         else if (activitySelect.value === 'silk_dye') cleanActivityName = "薄蠶絲花葉植印染";
