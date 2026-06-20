@@ -118,22 +118,33 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwlOo4wabACoCmK-m3dJIPylam09AlfWM6vzP-iU-hB9kSsYbwV_RN1-0ctOoJl1ej1/exec"; 
     const LIFF_ID = "2010240867-jc8x0Nkl"; 
 
+    // 💡 升級版：安全的標準初始化流程
     document.addEventListener("DOMContentLoaded", () => {
         liff.init({ liffId: LIFF_ID })
             .then(() => {
+                // 1. 如果沒登入，強制拉起登入
                 if (!liff.isLoggedIn()) {
                     liff.login(); 
                 } else {
-                    liff.getProfile().then(profile => {
-                        fetchRecords(profile.userId);
-                    }).catch(e => {
-                        console.error("抓取 Profile 失敗", e);
-                        showError('無法讀取您的 LINE 身份，請重試。');
+                    // 2. 登入成功後，等 LIFF 完全 Ready 再抓資料（解決突然閃退或抓不到的問題）
+                    liff.ready.then(() => {
+                        liff.getProfile()
+                            .then(profile => {
+                                if (profile && profile.userId) {
+                                    fetchRecords(profile.userId);
+                                } else {
+                                    showError('身分碼識別異常，請從 LINE 圖文選單重新打開。');
+                                }
+                            })
+                            .catch(e => {
+                                console.error("抓取 Profile 失敗", e);
+                                showError('無法讀取您的 LINE 身份，請重試。');
+                            });
                     });
                 }
             }).catch(err => {
                 console.error("LIFF 初始化失敗", err);
-                showError('LIFF 初始化失敗');
+                showError('LIFF 初始化失敗，請確認是否在 LINE 內開啟。');
             });
     });
 
@@ -142,6 +153,7 @@
             .then(res => res.json())
             .then(res => {
                 document.getElementById('loadingStatus').classList.add('hidden');
+                
                 if (res.status === "success") {
                     renderCards(res.data);
                 } else {
@@ -164,8 +176,9 @@
         
         let html = "";
         records.forEach(item => {
-            // 💡 ➕ 補上新課程的時間對照顯示邏輯
             let fullSessionText = item.session;
+            
+            // 💡 這裡幫你把上一趴提到的 2 個新課程轉換同步補進來！
             if (item.session === "7/19 下午場") {
                 fullSessionText = "7/19 (日) 13:00 - 15:00";
             } else if (item.session === "7/26 場次") {
@@ -185,10 +198,12 @@
             html += `
                 <div class="card">
                     <div class="card-title">🍂 ${item.activity}</div>
+                    
                     <div class="card-row">
                         <span class="label">👤 報名姓名</span>
                         <span class="value name-value">${item.name}</span>
                     </div>
+
                     <div class="card-row">
                         <span class="label">📅 上課場次</span>
                         <span class="value">${fullSessionText}</span>
