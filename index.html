@@ -1,13 +1,354 @@
-// 💡 請把 index.html 裡的 sessionData 改成這樣：
-const sessionData = {
-    weaving: [{ text: "7/3(四)、7/4(五) 上午09:30-12:00 / 下午14:30-17:00", value: "7/3-7/4（四堂課）" }],
-    dye_bag: [{ text: "7/19 (日) 13:00 - 15:00", value: "7/19 下午場" }],
-    shell_brooch: [{ text: "7/26 (日) 10:00 - 14:00", value: "7/26 場次" }],
-    wool_painting: [{ text: "7/19 (日) 09:30 - 12:00", value: "7/19 上午場" }],
-    silk_dye: [
-        { text: "6/20 (六) 10:00 - 16:00", value: "6/20 全天場" },
-        { text: "6/21 (日) 10:00 - 16:00", value: "6/21 全天場" }
-    ],
-    lipbalm: [{ text: "6/28 (日) 10:00 - 12:00 (上午場)", value: "6/28 上午場" }],
-    socks: [{ text: "6/28 (日) 14:00 - 16:00 (下午場)", value: "6/28 下午場" }]
-};
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>染織文化協會｜手作體驗報名</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #2E4F36 0%, #4A6B53 100%);
+            --primary-color: #2E4F36;
+            --accent-color: #D36B40; 
+            --bg-color: #EFEFEF; 
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 460px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
+        }
+        .decor-bar {
+            background: var(--primary-gradient);
+            height: 12px;
+            width: 100%;
+        }
+        .form-content {
+            padding: 30px 24px;
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0 0 8px 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        .form-group {
+            margin-bottom: 22px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #444;
+            font-size: 15px;
+        }
+        select, input[type="text"], input[type="tel"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #E0E0E0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: #F9F9F9;
+            color: #333;
+            transition: all 0.25s ease;
+        }
+        select:focus, input:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 79, 54, 0.1);
+        }
+        .radio-group {
+            display: flex;
+            gap: 24px;
+            margin-top: 8px;
+            padding: 4px;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .radio-label input {
+            margin-right: 8px;
+            transform: scale(1.2);
+            accent-color: var(--primary-color);
+        }
+        .fee-display {
+            background: #F4F7F4;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--accent-color);
+            border-left: 5px solid var(--primary-color);
+            letter-spacing: 0.5px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        }
+        hr {
+            border: 0;
+            border-top: 1px dashed #DDD;
+            margin: 30px 0;
+        }
+        button {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(46, 79, 54, 0.2);
+            margin-top: 10px;
+            letter-spacing: 1px;
+            display: block;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 79, 54, 0.3);
+        }
+        button:disabled {
+            background: #CCC;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="decor-bar"></div>
+    
+    <div class="form-content">
+        <h2>染織文化協會</h2>
+        <div class="subtitle">手作體驗課線上報名</div>
+        
+        <form id="regForm">
+            <div class="form-group">
+                <label>選擇活動項目</label>
+                <select id="activity" required>
+                    <option value="">-- 請選擇體驗項目 --</option>
+                    <option value="weaving">綴織課</option>
+                    <option value="dye_bag">植物染植物香氣香包</option>
+                    <option value="shell_brooch">珠貝編結胸針</option>
+                    <option value="wool_painting">羊毛畫體驗課</option>
+                    <option value="silk_dye">薄蠶絲花葉植印染</option>
+                    <option value="lipbalm">植萃香遇・護唇膏 DIY</option>
+                    <option value="socks">植物染襪手作體驗</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>活動場次時間</label>
+                <select id="session" required disabled>
+                    <option value="">-- 請先選擇活動項目 --</option>
+                </select>
+            </div>
+
+            <div id="identityGroup" class="form-group hidden">
+                <label>您的身分確認</label>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="identity" value="nonmember" checked> 非會員</label>
+                    <label class="radio-label"><input type="radio" name="identity" value="member"> 協會會員</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>本場次費用 (當天現場繳費)</label>
+                <div id="feeDisplay" class="fee-display">NT$ 0</div>
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label>報名姓名</label>
+                <input type="text" id="name" placeholder="請輸入真實姓名" required>
+            </div>
+
+            <div class="form-group">
+                <label>報名電話</label>
+                <input type="tel" id="phone" placeholder="請輸入手機號碼" required pattern="[0-9]{9,10}">
+            </div>
+
+            <div class="form-group">
+                <label>LINE 名稱（或是暱稱）</label>
+                <input type="text" id="lineId" placeholder="請輸入 LINE 顯示名稱">
+            </div>
+            <input type="hidden" id="lineUserId" value="">
+
+            <button type="submit" id="submitBtn">提交報名表單</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwlOo4wabACoCmK-m3dJIPylam09AlfWM6vzP-iU-hB9kSsYbwV_RN1-0ctOoJl1ej1/exec"; 
+    const LIFF_ID = "2010240867-jc8x0Nkl"; 
+
+    const activitySelect = document.getElementById('activity');
+    const sessionSelect = document.getElementById('session');
+    const identityGroup = document.getElementById('identityGroup');
+    const feeDisplay = document.getElementById('feeDisplay');
+    const regForm = document.getElementById('regForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!LIFF_ID || LIFF_ID.includes("你的")) {
+            return; 
+        }
+        liff.init({ liffId: LIFF_ID })
+            .then(() => {
+                if (!liff.isLoggedIn()) {
+                    liff.login(); 
+                } else {
+                    liff.getProfile().then(profile => {
+                        document.getElementById('lineUserId').value = profile.userId;
+                    }).catch(e => console.error("無法取得 Profile", e));
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch((err) => {
+                console.error("LIFF 初始化失敗", err);
+            });
+    });
+
+    const sessionData = {
+        weaving: [{ text: "7/3(四)、7/4(五) 上午09:30-12:00 / 下午14:30-17:00", value: "7/3-7/4（四堂課）" }],
+        dye_bag: [{ text: "7/19 (日) 13:00 - 15:00", value: "7/19 下午場" }],
+        shell_brooch: [{ text: "7/26 (日) 10:00 - 14:00", value: "7/26 場次" }],
+        wool_painting: [{ text: "7/19 (日) 09:30 - 12:00", value: "7/19 上午場" }],
+        silk_dye: [
+            { text: "6/20 (六) 10:00 - 16:00", value: "6/20 全天場" },
+            { text: "6/21 (日) 10:00 - 16:00", value: "6/21 全天場" }
+        ],
+        lipbalm: [{ text: "6/28 (日) 10:00 - 12:00 (上午場)", value: "6/28 上午場" }],
+        socks: [{ text: "6/28 (日) 14:00 - 16:00 (下午場)", value: "6/28 下午場" }]
+    };
+
+    activitySelect.addEventListener('change', updateForm);
+    document.querySelectorAll('input[name="identity"]').forEach(radio => {
+        radio.addEventListener('change', calculateFee);
+    });
+
+    function updateForm() {
+        const act = activitySelect.value;
+        sessionSelect.innerHTML = "";
+        if (!act) {
+            sessionSelect.disabled = true;
+            sessionSelect.innerHTML = '<option value="">-- 請先選擇活動項目 --</option>';
+            identityGroup.classList.add('hidden');
+            feeDisplay.innerText = "NT$ 0";
+            return;
+        }
+        sessionSelect.disabled = false;
+        sessionData[act].forEach(item => {
+            let opt = document.createElement('option');
+            opt.value = item.value;
+            opt.innerText = item.text;
+            sessionSelect.appendChild(opt);
+        });
+        
+        if (act === 'socks' || act === 'silk_dye') { 
+            identityGroup.classList.remove('hidden'); 
+        } else { 
+            identityGroup.classList.add('hidden'); 
+        }
+        calculateFee();
+    }
+
+    function calculateFee() {
+        const act = activitySelect.value;
+        const isMember = document.querySelector('input[name="identity"]:checked').value === 'member';
+        
+        if (act === 'weaving') {
+            feeDisplay.innerText = "500";
+        } else if (act === 'dye_bag') {
+            feeDisplay.innerText = "499";
+        } else if (act === 'shell_brooch') {
+            feeDisplay.innerText = "800";
+        } else if (act === 'wool_painting') {
+            feeDisplay.innerText = "590";
+        } else if (act === 'silk_dye') {
+            feeDisplay.innerText = isMember ? "3500" : "3800"; 
+        } else if (act === 'lipbalm') { 
+            feeDisplay.innerText = "520"; 
+        } else if (act === 'socks') {
+            feeDisplay.innerText = isMember ? "250" : "350";
+        }
+    }
+
+    regForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const userId = document.getElementById('lineUserId').value;
+        submitBtn.disabled = true; 
+
+        let cleanActivityName = "未知項目";
+        if (activitySelect.value === 'weaving') cleanActivityName = "綴織課";
+        else if (activitySelect.value === 'dye_bag') cleanActivityName = "植物染植物香氣香包";
+        else if (activitySelect.value === 'shell_brooch') cleanActivityName = "珠貝編結胸針";
+        else if (activitySelect.value === 'wool_painting') cleanActivityName = "羊毛畫體驗課";
+        else if (activitySelect.value === 'silk_dye') cleanActivityName = "薄蠶絲花葉植印染";
+        else if (activitySelect.value === 'socks') cleanActivityName = "植物染襪手作體驗";
+        else if (activitySelect.value === 'lipbalm') cleanActivityName = "植萃香遇・護唇膏 DIY";
+        
+        let finalIdentity = "一般";
+        if (activitySelect.value === 'socks' || activitySelect.value === 'silk_dye') {
+            finalIdentity = document.querySelector('input[name="identity"]:checked').value === 'member' ? "會員" : "非會員";
+        }
+
+        const payload = {
+            userId: userId || "U00000000000000000000000000000000",
+            activity: cleanActivityName,
+            session: sessionSelect.value,
+            identity: finalIdentity,
+            fee: feeDisplay.innerText,
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            lineId: document.getElementById('lineId').value
+        };
+
+        fetch(GAS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        alert('報名成功！憑證已即時發送到您的 LINE 聊天室！');
+        liff.closeWindow(); 
+    });
+</script>
+</body>
+</html>
