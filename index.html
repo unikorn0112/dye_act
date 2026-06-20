@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -225,9 +225,6 @@
     const submitBtn = document.getElementById('submitBtn');
 
     document.addEventListener("DOMContentLoaded", () => {
-        if (!LIFF_ID || LIFF_ID.includes("你的")) {
-            return; 
-        }
         liff.init({ liffId: LIFF_ID })
             .then(() => {
                 if (!liff.isLoggedIn()) {
@@ -244,8 +241,14 @@
             });
     });
 
+    // 💡 綴織課已成功拆分為 4 個獨立梯次時間
     const sessionData = {
-        weaving: [{ text: "7/3(四)、7/4(五) 上午09:30-12:00 / 下午14:30-17:00", value: "7/3-7/4（四堂課）" }],
+        weaving: [
+            { text: "7/3 (四) 上午場 09:30 - 12:00", value: "7/3 上午場" },
+            { text: "7/3 (四) 下午場 14:30 - 17:00", value: "7/3 下午場" },
+            { text: "7/4 (五) 上午場 09:30 - 12:00", value: "7/4 上午場" },
+            { text: "7/4 (五) 下午場 14:30 - 17:00", value: "7/4 下午場" }
+        ],
         dye_bag: [{ text: "7/19 (日) 13:00 - 15:00", value: "7/19 下午場" }],
         shell_brooch: [{ text: "7/26 (日) 10:00 - 14:00", value: "7/26 場次" }],
         wool_painting: [{ text: "7/19 (日) 09:30 - 12:00", value: "7/19 上午場" }],
